@@ -240,7 +240,7 @@ get_distribution_components() {
 		MLIRTargetLLVMIRImport
 		MLIRToLLVMIRTranslationRegistration
 		MLIRX86VectorToLLVMIRTranslation
-
+		MLIRTargetCpp
 		MLIRLLVMCommonConversion
 		MLIRGPUTransforms
 		MLIRSparseTensorUtils
@@ -253,7 +253,7 @@ get_distribution_components() {
 		MLIREmitC
 		MLIRMemRefToLLVM
 		MLIRGPUOps
-
+		MLIRTilingInterface
 		bash-autocomplete
 		c-index-test
 
@@ -313,8 +313,10 @@ get_distribution_components() {
 		docs-clang-man
 		docs-flang-html
 		docs-flang-man
+
 		#f18 needed for flang
 		f18-parse-demo
+
 		#f18
 		fir-opt
 		flang-new
@@ -336,6 +338,13 @@ get_distribution_components() {
 		scan-view
 		tco
 		FIROptimizer
+
+		# other llvm distribution components
+		MLIRCAPILLVM
+		MLIRReduceLib
+		clang-repl
+		scan-build-py
+
 	)
 
 	if multilib_is_native_abi; then
@@ -478,7 +487,6 @@ multilib_src_configure() {
 		-DLLVM_TARGETS_TO_BUILD=""
 		-DLLVM_EXPERIMENTAL_TARGETS_TO_BUILD="${LLVM_TARGETS// /;}"
 		-DLLVM_BUILD_TESTS=$(usex test)
-		-DFLANG_BUILD_NEW_DRIVER=$(usex mlir)
 		-DLLVM_ENABLE_FFI=$(usex libffi)
 		-DLLVM_ENABLE_LIBEDIT=$(usex libedit)
 		-DLLVM_ENABLE_TERMINFO=$(usex ncurses)

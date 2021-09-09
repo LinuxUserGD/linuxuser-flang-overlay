@@ -344,7 +344,7 @@ get_distribution_components() {
 		MLIRReduceLib
 		clang-repl
 		scan-build-py
-
+		MLIRReconcileUnrealizedCasts
 	)
 
 	if multilib_is_native_abi; then

@@ -259,6 +259,7 @@ get_distribution_components() {
 		MLIRMemRefToLLVM
 		MLIRGPUOps
 		MLIRTilingInterface
+		MLIRBufferizableOpInterface
 		bash-autocomplete
 		c-index-test
 

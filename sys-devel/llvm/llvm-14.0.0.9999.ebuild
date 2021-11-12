@@ -261,6 +261,7 @@ get_distribution_components() {
 		MLIRTilingInterface
 		MLIRBufferizableOpInterface
 		MLIRComprehensiveBufferize
+		MLIRLinalgBufferizableOpInterfaceImpl
 		bash-autocomplete
 		c-index-test
 

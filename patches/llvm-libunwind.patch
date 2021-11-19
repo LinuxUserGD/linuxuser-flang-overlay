@@ -1,0 +1,43 @@
+diff --git a/libcxx/CMakeLists.txt b/libcxx/CMakeLists.txt
+index 657714fb0094..49ec05b0212d 100644
+--- a/libcxx/CMakeLists.txt
++++ b/libcxx/CMakeLists.txt
+@@ -82,7 +82,7 @@ endif()
+ # Setup CMake Options
+ #===============================================================================
+ include(CMakeDependentOption)
+-include(HandleCompilerRT)
++#include(HandleCompilerRT)
+ 
+ # Basic options ---------------------------------------------------------------
+ option(LIBCXX_ENABLE_ASSERTIONS "Enable assertions independent of build mode." OFF)
+diff --git a/libcxx/cmake/config-ix.cmake b/libcxx/cmake/config-ix.cmake
+index 8ca8b14151df..c30091ac0f0f 100644
+--- a/libcxx/cmake/config-ix.cmake
++++ b/libcxx/cmake/config-ix.cmake
+@@ -48,9 +48,9 @@ if (LIBCXX_SUPPORTS_NOSTDLIBXX_FLAG OR LIBCXX_SUPPORTS_NODEFAULTLIBS_FLAG)
+     list(APPEND CMAKE_REQUIRED_LIBRARIES c)
+   endif ()
+   if (LIBCXX_USE_COMPILER_RT)
+-    include(HandleCompilerRT)
+-    find_compiler_rt_library(builtins LIBCXX_BUILTINS_LIBRARY
+-                             FLAGS ${LIBCXX_COMPILE_FLAGS})
++    #include(HandleCompilerRT)
++    #find_compiler_rt_library(builtins LIBCXX_BUILTINS_LIBRARY
++    #                         FLAGS ${LIBCXX_COMPILE_FLAGS})
+     list(APPEND CMAKE_REQUIRED_LIBRARIES "${LIBCXX_BUILTINS_LIBRARY}")
+   elseif (LIBCXX_HAS_GCC_LIB)
+     list(APPEND CMAKE_REQUIRED_LIBRARIES gcc)
+diff --git a/libcxx/CMakeLists.txt b/libcxx/CMakeLists.txt
+index 9d78537a9378..d9a61af215de 100644
+--- a/libcxx/CMakeLists.txt
++++ b/libcxx/CMakeLists.txt
+@@ -816,7 +816,7 @@ function(cxx_link_system_libraries target)
+   endif()
+ 
+   if (LIBCXX_USE_COMPILER_RT)
+-    find_compiler_rt_library(builtins LIBCXX_BUILTINS_LIBRARY)
++    #find_compiler_rt_library(builtins LIBCXX_BUILTINS_LIBRARY)
+     if (LIBCXX_BUILTINS_LIBRARY)
+       target_link_libraries(${target} PRIVATE "${LIBCXX_BUILTINS_LIBRARY}")
+     endif()

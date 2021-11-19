@@ -1,0 +1,12 @@
+diff --git a/compiler-rt/cmake/Modules/AddCompilerRT.cmake b/compiler-rt/cmake/Modules/AddCompilerRT.cmake
+index 88c1cfc9a441..eeef7b0e750d 100644
+--- a/compiler-rt/cmake/Modules/AddCompilerRT.cmake
++++ b/compiler-rt/cmake/Modules/AddCompilerRT.cmake
+@@ -1,6 +1,6 @@
+ include(ExternalProject)
+ include(CompilerRTUtils)
+-include(HandleCompilerRT)
++#include(HandleCompilerRT)
+ 
+ function(set_target_output_directories target output_dir)
+   # For RUNTIME_OUTPUT_DIRECTORY variable, Multi-configuration generators

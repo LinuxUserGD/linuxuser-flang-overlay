@@ -70,6 +70,10 @@ LLVM_MANPAGES=build
 LLVM_PATCHSET=9999-2
 llvm.org_set_globals
 
+#PATCHES=(
+#	"${FILESDIR}"/dir.patch
+#)
+
 python_check_deps() {
 	use doc || return 0
 

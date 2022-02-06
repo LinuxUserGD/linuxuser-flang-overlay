@@ -3,7 +3,7 @@
 
 EAPI=7
 
-PYTHON_COMPAT=( python3_{6..10} )
+PYTHON_COMPAT=( python3_{8..10} )
 inherit cmake llvm.org multilib-minimal pax-utils python-any-r1 \
 	toolchain-funcs
 
@@ -11,10 +11,10 @@ DESCRIPTION="Low Level Virtual Machine"
 HOMEPAGE="https://llvm.org/"
 
 # Those are in lib/Targets, without explicit CMakeLists.txt mention
-ALL_LLVM_EXPERIMENTAL_TARGETS=( ARC CSKY M68k VE )
+ALL_LLVM_EXPERIMENTAL_TARGETS=( ARC CSKY M68k )
 # Keep in sync with CMakeLists.txt
 ALL_LLVM_TARGETS=( AArch64 AMDGPU ARM AVR BPF Hexagon Lanai Mips MSP430
-	NVPTX PowerPC RISCV Sparc SystemZ WebAssembly X86 XCore
+	NVPTX PowerPC RISCV Sparc SystemZ VE WebAssembly X86 XCore
 	"${ALL_LLVM_EXPERIMENTAL_TARGETS[@]}" )
 ALL_LLVM_TARGETS=( "${ALL_LLVM_TARGETS[@]/#/llvm_targets_}" )
 
@@ -67,12 +67,8 @@ PDEPEND="sys-devel/llvm-common
 
 LLVM_COMPONENTS=( llvm mlir flang clang )
 LLVM_MANPAGES=build
-LLVM_PATCHSET=9999-2
+#LLVM_PATCHSET=9999-2
 llvm.org_set_globals
-
-#PATCHES=(
-#	"${FILESDIR}"/dir.patch
-#)
 
 python_check_deps() {
 	use doc || return 0

@@ -11,7 +11,7 @@ DESCRIPTION="Low Level Virtual Machine"
 HOMEPAGE="https://llvm.org/"
 
 # Those are in lib/Targets, without explicit CMakeLists.txt mention
-ALL_LLVM_EXPERIMENTAL_TARGETS=( ARC CSKY M68k )
+ALL_LLVM_EXPERIMENTAL_TARGETS=( ARC CSKY LoongArch M68k )
 # Keep in sync with CMakeLists.txt
 ALL_LLVM_TARGETS=( AArch64 AMDGPU ARM AVR BPF Hexagon Lanai Mips MSP430
 	NVPTX PowerPC RISCV Sparc SystemZ VE WebAssembly X86 XCore
@@ -65,9 +65,10 @@ RDEPEND="${RDEPEND}
 PDEPEND="sys-devel/llvm-common
 	binutils-plugin? ( >=sys-devel/llvmgold-${SLOT} )"
 
-LLVM_COMPONENTS=( llvm cmake third-party mlir flang clang )
+LLVM_COMPONENTS=( llvm cmake third-party mlir flang clang libcxx libcxxabi compiler-rt lld libunwind runtimes )
 LLVM_MANPAGES=build
 LLVM_PATCHSET=9999-r3
+LLVM_USE_TARGETS=PROVIDE
 llvm.org_set_globals
 
 python_check_deps() {
@@ -281,7 +282,6 @@ get_distribution_components() {
 		MLIRMemRefToLLVM
 		MLIRGPUOps
 		MLIRTilingInterface
-		MLIRLinalgBufferizableOpInterfaceImpl
 		bash-autocomplete
 		c-index-test
 
@@ -537,7 +537,8 @@ multilib_src_configure() {
 	)
 
 	use mlir && mycmakeargs+=(
-		-DLLVM_ENABLE_PROJECTS="mlir;flang;clang"
+		-DLLVM_ENABLE_RUNTIMES="libunwind;libcxx;libcxxabi"
+		-DLLVM_ENABLE_PROJECTS="mlir;flang;clang;compiler-rt;lld"
 	)
 
 	if is_libcxx_linked; then

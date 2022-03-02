@@ -216,6 +216,9 @@ get_distribution_components() {
 		LLVMSupport
 		LLVMTableGen
 
+		llvm-otool
+                llvm-windres
+
 		# fortran needed for flang
 		FortranCommon
 		FortranDecimal
@@ -225,7 +228,10 @@ get_distribution_components() {
 		FortranRuntime
 		FortranSemantics
 
-		#mlir needed for flang
+		# mlir needed for flang
+		MLIRCAPILLVM
+                MLIRReduceLib
+		MLIRReconcileUnrealizedCasts
 		MLIRControlFlowToLLVM
 		MLIRSCFToControlFlow
 		MLIRVectorUtils
@@ -248,7 +254,6 @@ get_distribution_components() {
 		MLIRBufferizationToMemRef
 		MLIRMemRefTestPasses
 		MLIRTensorTestPasses
-
 		MLIRArithmetic
 		MLIRArithmeticToLLVM
 		MLIRArithmeticToLLVM
@@ -282,10 +287,15 @@ get_distribution_components() {
 		MLIRMemRefToLLVM
 		MLIRGPUOps
 		MLIRTilingInterface
+		MLIRFuncTransforms
+                MLIRFunc
+                MLIRFuncTestPasses
+		mlir-linalg-ods-yaml-gen
+                mlir-lsp-server
 		bash-autocomplete
 		c-index-test
 
-		#clang needed for flang
+		# clang needed for flang
 		clang-check
 		clang-cmake-exports
 		clang-cpp
@@ -336,43 +346,29 @@ get_distribution_components() {
 		clangToolingRefactoring
 		clangToolingSyntax
 		clangTransformer
+		clang-repl
+		libclang-headers
+                libclang-python-bindings
+                libclang
 		diagtool
 		docs-clang-html
 		docs-clang-man
 		docs-flang-html
 		docs-flang-man
 
-		#f18 needed for flang
+		# f18 needed for flang
 		f18-parse-demo
-
-		#f18
 		fir-opt
 		flang-new
 		flangFrontend
 		flangFrontendTool
 		hmaptool
 
-		libclang-headers
-		libclang-python-bindings
-		libclang
-
-		llvm-otool
-		llvm-windres
-
-		mlir-linalg-ods-yaml-gen
-		mlir-lsp-server
-
-		scan-build
-		scan-view
-		tco
-		#FIROptimizer
-
 		# other llvm distribution components
-		MLIRCAPILLVM
-		MLIRReduceLib
-		clang-repl
 		scan-build-py
-		MLIRReconcileUnrealizedCasts
+		scan-build
+                scan-view
+                tco
 	)
 
 	if multilib_is_native_abi; then
@@ -484,7 +480,7 @@ get_distribution_components() {
 	fi
 
 	if use mlir; then
-		out+=( flang-cmake-exports flang-libraries clangBasic clangDriver MLIRROCDLToLLVMIRTranslation MLIRNVVMToLLVMIRTranslation MLIRAffineToStandard MLIRMemRef  MLIRGPUToNVVMTransforms MLIRMemRef  MLIRLinalgToStandard MLIRMemRef  MLIRSCFToGPU MLIRMemRef  MLIRShapeToStandard MLIRMemRef  MLIRStandardToLLVM MLIRDataLayoutInterfaces  MLIRStandardToLLVM MLIRMath  MLIRStandardToLLVM MLIRMemRef  MLIRStandardToSPIRV MLIRMath  MLIRStandardToSPIRV MLIRMemRef  MLIRTosaToLinalg MLIRMath  MLIRTosaToLinalg MLIRMemRef  MLIRVectorToLLVM MLIRArmSVETransforms  MLIRVectorToLLVM MLIRAMX  MLIRVectorToLLVM MLIRAMXTransforms  MLIRVectorToLLVM MLIRMemRef  MLIRVectorToLLVM MLIRTargetLLVMIRExport  MLIRVectorToLLVM MLIRX86Vector  MLIRVectorToLLVM MLIRX86VectorTransforms  MLIRVectorToSCF MLIRMemRef  MLIRAffine MLIRMemRef  MLIRAffineTransforms MLIRMemRef MLIRDataLayoutInterfaces MLIRDLTI MLIRMemRef MLIRLLVMToLLVMIRTranslation  MLIRLinalgAnalysis MLIRMemRef  MLIRLinalg MLIRDialectUtils  MLIRLinalg MLIRMemRef  MLIRLinalgTransforms MLIRMemRef  MLIRSCF MLIRMemRef  MLIRSCFTransforms MLIRMemRef  MLIRShapeOpsTransforms MLIRMemRef  MLIRStandardOpsTransforms MLIRMemRef  MLIRTensorTransforms MLIRMemRef  MLIRVector MLIRDialectUtils  MLIRVector MLIRMemRef  MLIRVector MLIRDataLayoutInterfaces  MLIRExecutionEngine MLIRLLVMToLLVMIRTranslation  MLIRExecutionEngine MLIRTargetLLVMIRExport  MLIRJitRunner MLIRArmSVETransforms  MLIRJitRunner MLIRAMX  MLIRJitRunner MLIRAMXTransforms  MLIRJitRunner MLIRDLTI  MLIRJitRunner MLIRMath  MLIRJitRunner MLIRMathTransforms  MLIRJitRunner MLIRMemRef  MLIRJitRunner MLIRMemRefTransforms  MLIRJitRunner MLIRMemRefUtils  MLIRJitRunner MLIRSparseTensor  MLIRJitRunner MLIRSparseTensorTransforms  MLIRJitRunner MLIRX86Vector  MLIRJitRunner MLIRX86VectorTransforms  MLIRJitRunner MLIRLLVMToLLVMIRTranslation  MLIRJitRunner MLIRTargetLLVMIRExport  MLIRTransformUtils MLIRMemRef  MLIRTransforms MLIRMemRef  MLIRCAPIRegistration MLIRLLVMToLLVMIRTranslation  MLIRCAPIRegistration MLIRArmSVETransforms  MLIRCAPIRegistration MLIRAMX  MLIRCAPIRegistration MLIRAMXTransforms  MLIRCAPIRegistration MLIRDLTI  MLIRCAPIRegistration MLIRMath  MLIRCAPIRegistration MLIRMathTransforms  MLIRCAPIRegistration MLIRMemRef  MLIRCAPIRegistration MLIRMemRefTransforms  MLIRCAPIRegistration MLIRMemRefUtils  MLIRCAPIRegistration MLIRSparseTensor  MLIRCAPIRegistration MLIRSparseTensorTransforms  MLIRCAPIRegistration MLIRX86Vector  MLIRCAPIRegistration MLIRX86VectorTransforms  MLIRTestDialect MLIRDataLayoutInterfaces  MLIRTestDialect MLIRDLTI  MLIRMlirOptMain MLIRArmSVETransforms  MLIRMlirOptMain MLIRAMX  MLIRMlirOptMain MLIRAMXTransforms  MLIRMlirOptMain MLIRDLTI  MLIRMlirOptMain MLIRMath  MLIRMlirOptMain MLIRMathTransforms  MLIRMlirOptMain MLIRMemRef  MLIRMlirOptMain MLIRMemRefTransforms  MLIRMlirOptMain MLIRMemRefUtils  MLIRMlirOptMain MLIRSparseTensor  MLIRMlirOptMain MLIRSparseTensorTransforms  MLIRMlirOptMain MLIRX86Vector  MLIRMlirOptMain MLIRX86VectorTransforms  MLIRMlirOptMain MLIRComplexToStandard  MLIRMlirOptMain MLIRMathToLibm  MLIRMlirOptMain MLIROpenACCToLLVM  MLIRMlirOptMain MLIRTosaToSCF  MLIRMlirOptMain MLIRTosaToStandard  MLIRMlirOptMain MLIRTestStandardToLLVM  MLIRMlirOptMain MLIRDLTITestPasses  MLIRMlirOptMain MLIRGPUTestPasses  MLIRMlirOptMain MLIRLinalgTestPasses  MLIRMlirOptMain MLIRMathTestPasses  MLIRMlirOptMain MLIRSCFTestPasses  MLIRMlirOptMain MLIRStandardOpsTestPasses  MLIRMlirOptMain MLIRVectorTestPasses  MLIRMlirOptMain MLIRTestAnalysis MLIR  MLIRAffine  MLIRAffineToStandard MLIRAffineTransforms MLIRAffineTransformsTestPasses MLIRAffineUtils MLIRAnalysis MLIRArmNeon  MLIRArmSVE MLIRAsync MLIRAsyncToLLVM MLIRAsyncTransforms MLIRCAPIIR MLIRCAPILinalg MLIRCAPIRegistration MLIRCAPISCF MLIRCAPIShape MLIRCAPIStandard MLIRCAPITensor MLIRCAPITransforms MLIRCallInterfaces MLIRCastInterfaces MLIRComplex MLIRComplexToLLVM MLIRControlFlowInterfaces MLIRCopyOpInterface MLIRDerivedAttributeOpInterface MLIRDialect MLIRExecutionEngine MLIRGPUToGPURuntimeTransforms MLIRGPUToNVVMTransforms MLIRGPUToROCDLTransforms MLIRGPUToSPIRV MLIRGPUToVulkanTransforms MLIRIR MLIRInferTypeOpInterface MLIRJitRunner MLIRLLVMIR MLIRLLVMIRTransforms MLIRLinalg MLIRLinalgAnalysis MLIRLinalgToLLVM MLIRLinalgToSPIRV MLIRLinalgToStandard MLIRLinalgTransforms MLIRLinalgUtils MLIRLoopLikeInterface MLIRMlirOptMain MLIRNVVMIR MLIROpenACC MLIROpenMP MLIROpenMPToLLVM MLIROptLib MLIRPDL MLIRPDLInterp MLIRPDLToPDLInterp MLIRParser MLIRPass MLIRPresburger  MLIRQuant MLIRROCDLIR MLIRReduce MLIRRewrite MLIRSCF MLIRSCFToGPU MLIRSCFToOpenMP MLIRSCFToSPIRV MLIRSCFTransforms MLIRSPIRV MLIRSPIRVBinaryUtils MLIRSPIRVConversion MLIRSPIRVDeserialization MLIRSPIRVModuleCombiner MLIRSPIRVSerialization MLIRSPIRVTestPasses MLIRSPIRVToLLVM MLIRSPIRVTransforms MLIRSPIRVTranslateRegistration MLIRSPIRVUtils MLIRShape MLIRShapeOpsTransforms MLIRShapeTestPasses MLIRShapeToStandard MLIRSideEffectInterfaces MLIRStandard MLIRStandardOpsTransforms MLIRStandardToLLVM MLIRStandardToSPIRV MLIRSupport MLIRSupportIndentedOstream MLIRTableGen MLIRTensor MLIRTensorTransforms MLIRTestDialect MLIRTestIR MLIRTestPass MLIRTestReducer MLIRTestRewrite MLIRTestTransforms MLIRTosa MLIRTosaTestPasses MLIRTosaToLinalg MLIRTosaTransforms MLIRTransformUtils MLIRTransforms MLIRTranslation MLIRVector MLIRVectorInterfaces MLIRVectorToLLVM MLIRVectorToROCDL MLIRVectorToSCF MLIRVectorToSPIRV MLIRViewLikeInterface mlir-cmake-exports mlir-cpu-runner mlir-headers mlir-opt mlir-reduce mlir-tblgen mlir-translate mlir_async_runtime mlir_c_runner_utils mlir_runner_utils )
+		out+=( MLIR MLIRAMX MLIRAMXTransforms MLIRAffine MLIRAffineToStandard MLIRAffineTransforms MLIRAffineTransformsTestPasses MLIRAffineUtils MLIRAnalysis MLIRArmNeon MLIRArmSVE MLIRArmSVETransforms MLIRAsync MLIRAsyncToLLVM MLIRAsyncTransforms MLIRCAPIIR MLIRCAPILinalg MLIRCAPIRegistration MLIRCAPISCF MLIRCAPIShape MLIRCAPITensor MLIRCAPITransforms MLIRCallInterfaces MLIRCastInterfaces MLIRComplex MLIRComplexToLLVM MLIRComplexToStandard MLIRControlFlowInterfaces MLIRCopyOpInterface MLIRDLTI MLIRDLTITestPasses MLIRDataLayoutInterfaces MLIRDerivedAttributeOpInterface MLIRDialect MLIRDialectUtils MLIRExecutionEngine MLIRGPUTestPasses MLIRGPUToGPURuntimeTransforms MLIRGPUToNVVMTransforms MLIRGPUToROCDLTransforms MLIRGPUToSPIRV MLIRGPUToVulkanTransforms MLIRIR MLIRInferTypeOpInterface MLIRJitRunner MLIRLLVMIR MLIRLLVMIRTransforms MLIRLLVMToLLVMIRTranslation MLIRLinalg MLIRLinalgAnalysis MLIRLinalgTestPasses MLIRLinalgToLLVM MLIRLinalgToSPIRV MLIRLinalgToStandard MLIRLinalgTransforms MLIRLinalgUtils MLIRLoopLikeInterface MLIRMath MLIRMathTestPasses MLIRMathToLibm MLIRMathTransforms MLIRMemRef MLIRMemRefTransforms MLIRMemRefUtils MLIRMlirOptMain MLIRNVVMIR MLIRNVVMToLLVMIRTranslation MLIROpenACC MLIROpenACCToLLVM MLIROpenMP MLIROpenMPToLLVM MLIROptLib MLIRPDL MLIRPDLInterp MLIRPDLToPDLInterp MLIRParser MLIRPass MLIRPresburger MLIRQuant MLIRROCDLIR MLIRROCDLToLLVMIRTranslation MLIRReduce MLIRRewrite MLIRSCF MLIRSCFTestPasses MLIRSCFToGPU MLIRSCFToOpenMP MLIRSCFToSPIRV MLIRSCFTransforms MLIRSPIRV MLIRSPIRVBinaryUtils MLIRSPIRVConversion MLIRSPIRVDeserialization MLIRSPIRVModuleCombiner MLIRSPIRVSerialization MLIRSPIRVTestPasses MLIRSPIRVToLLVM MLIRSPIRVTransforms MLIRSPIRVTranslateRegistration MLIRSPIRVUtils MLIRShape MLIRShapeOpsTransforms MLIRShapeTestPasses MLIRShapeToStandard MLIRSideEffectInterfaces MLIRSparseTensor MLIRSparseTensorTransforms MLIRStandardToLLVM MLIRStandardToSPIRV MLIRSupport MLIRSupportIndentedOstream MLIRTableGen MLIRTargetLLVMIRExport MLIRTensor MLIRTensorTransforms MLIRTestAnalysis MLIRTestDialect MLIRTestIR MLIRTestPass MLIRTestReducer MLIRTestRewrite MLIRTestStandardToLLVM MLIRTestTransforms MLIRTosa MLIRTosaTestPasses MLIRTosaToLinalg MLIRTosaToSCF MLIRTosaToStandard MLIRTosaTransforms MLIRTransformUtils MLIRTransforms MLIRTranslation MLIRVector MLIRVectorInterfaces MLIRVectorTestPasses MLIRVectorToLLVM MLIRVectorToROCDL MLIRVectorToSCF MLIRVectorToSPIRV MLIRViewLikeInterface MLIRX86Vector MLIRX86VectorTransforms clangBasic clangDriver flang-cmake-exports flang-libraries mlir-cmake-exports mlir-cpu-runner mlir-headers mlir-opt mlir-reduce mlir-tblgen mlir-translate mlir_async_runtime mlir_c_runner_utils mlir_runner_utils )
 	fi
 
 	printf "%s${sep}" "${out[@]}"

@@ -215,6 +215,23 @@ get_distribution_components() {
 		LLVMDemangle
 		LLVMSupport
 		LLVMTableGen
+		LLVMAnalysis
+		LLVMTarget
+		LLVMBinaryFormat
+		LLVMCore
+		LLVMObject
+		LLVMProfileData
+		LLVMMC
+		LLVMMCParser
+		LLVMRemarks
+		LLVMBitReader
+		LLVMBitstreamReader
+		LLVMSymbolize
+		LLVMDebugInfoDWARF
+		LLVMDebugInfoMSF
+		LLVMDebugInfoPDB
+		LLVMDebugInfoCodeView
+		LLVMTextAPI
 		llvm-otool
                 llvm-windres
 		llvm-debuginfod-find
@@ -342,6 +359,7 @@ get_distribution_components() {
 		clang-rename
 		clang-resource-headers
 		clang-scan-deps
+		clangAnalysisFlowSensitiveModels
 		clang
 		clangAPINotes
 		clangARCMigrate
@@ -383,36 +401,22 @@ get_distribution_components() {
 		clang-pseudo
 		clangAnalysisFlowSensitive
 		clangToolingSyntaxPseudo
-		clang_rt.asan-dynamic-i386
 		clang_rt.asan-dynamic-x86_64
-		clang_rt.asan-i386
-		clang_rt.asan-preinit-i386
 		clang_rt.asan-preinit-x86_64
 		clang_rt.asan-x86_64
-		clang_rt.asan_cxx-i386
 		clang_rt.asan_cxx-x86_64
-		clang_rt.asan_static-i386
 		clang_rt.asan_static-x86_64
-		clang_rt.builtins-i386
 		clang_rt.builtins-x86_64
-		clang_rt.cfi-i386
 		clang_rt.cfi-x86_64
-		clang_rt.cfi_diag-i386
 		clang_rt.cfi_diag-x86_64
-		clang_rt.crtbegin-i386
 		clang_rt.crtbegin-x86_64
-		clang_rt.crtend-i386
 		clang_rt.crtend-x86_64
 		clang_rt.dd-x86_64
 		clang_rt.dfsan-x86_64
 		clang_rt.dyndd-dynamic-x86_64
-		clang_rt.fuzzer-i386
 		clang_rt.fuzzer-x86_64
-		clang_rt.fuzzer_interceptors-i386
 		clang_rt.fuzzer_interceptors-x86_64
-		clang_rt.fuzzer_no_main-i386
 		clang_rt.fuzzer_no_main-x86_64
-		clang_rt.gwp_asan-i386
 		clang_rt.gwp_asan-x86_64
 		clang_rt.hwasan-dynamic-x86_64
 		clang_rt.hwasan-preinit-x86_64
@@ -421,7 +425,6 @@ get_distribution_components() {
 		clang_rt.hwasan_aliases-x86_64
 		clang_rt.hwasan_aliases_cxx-x86_64
 		clang_rt.hwasan_cxx-x86_64
-		clang_rt.lsan-i386
 		clang_rt.lsan-x86_64
 		clang_rt.memprof-dynamic-x86_64
 		clang_rt.memprof-preinit-x86_64
@@ -430,44 +433,26 @@ get_distribution_components() {
 		clang_rt.msan-x86_64
 		clang_rt.msan_cxx-x86_64
 		clang_rt.orc-x86_64
-		clang_rt.profile-i386
 		clang_rt.profile-x86_64
-		clang_rt.safestack-i386
 		clang_rt.safestack-x86_64
-		clang_rt.scudo-dynamic-i386
 		clang_rt.scudo-dynamic-x86_64
-		clang_rt.scudo-i386
 		clang_rt.scudo-x86_64
-		clang_rt.scudo_cxx-i386
 		clang_rt.scudo_cxx-x86_64
-		clang_rt.scudo_cxx_minimal-i386
 		clang_rt.scudo_cxx_minimal-x86_64
-		clang_rt.scudo_minimal-dynamic-i386
 		clang_rt.scudo_minimal-dynamic-x86_64
-		clang_rt.scudo_minimal-i386
 		clang_rt.scudo_minimal-x86_64
-		clang_rt.scudo_standalone-dynamic-i386
 		clang_rt.scudo_standalone-dynamic-x86_64
-		clang_rt.scudo_standalone-i386
 		clang_rt.scudo_standalone-x86_64
-		clang_rt.scudo_standalone_cxx-i386
 		clang_rt.scudo_standalone_cxx-x86_64
-		clang_rt.stats-i386
 		clang_rt.stats-x86_64
-		clang_rt.stats_client-i386
 		clang_rt.stats_client-x86_64
 		clang_rt.tsan-dynamic-x86_64
 		clang_rt.tsan-x86_64
 		clang_rt.tsan_cxx-x86_64
-		clang_rt.ubsan_minimal-dynamic-i386
 		clang_rt.ubsan_minimal-dynamic-x86_64
-		clang_rt.ubsan_minimal-i386
 		clang_rt.ubsan_minimal-x86_64
-		clang_rt.ubsan_standalone-dynamic-i386
 		clang_rt.ubsan_standalone-dynamic-x86_64
-		clang_rt.ubsan_standalone-i386
 		clang_rt.ubsan_standalone-x86_64
-		clang_rt.ubsan_standalone_cxx-i386
 		clang_rt.ubsan_standalone_cxx-x86_64
 		clang_rt.xray-basic-x86_64
 		clang_rt.xray-fdr-x86_64

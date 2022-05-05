@@ -34,6 +34,14 @@ RESTRICT="!test? ( test )"
 
 RDEPEND="
 	sys-libs/zlib:0=[${MULTILIB_USEDEP}]
+	=sys-libs/compiler-rt-15.0.0.9999::LinuxUserGD
+	=sys-libs/compiler-rt-sanitizers-15.0.0.9999::LinuxUserGD
+	=sys-devel/clang-15.0.0.9999::LinuxUserGD
+	=sys-devel/clang-runtime-15.0.0.9999::LinuxUserGD
+	=sys-devel/lld-15.0.0.9999::LinuxUserGD
+	=sys-libs/libcxx-15.0.0.9999::LinuxUserGD
+	=sys-libs/libcxxabi-15.0.0.9999::LinuxUserGD
+	=sys-libs/llvm-libunwind-15.0.0.9999::LinuxUserGD
 	exegesis? ( dev-libs/libpfm:= )
 	binutils-plugin? ( >=sys-devel/binutils-2.31.1-r4:*[plugins] )
 	libedit? ( dev-libs/libedit:0=[${MULTILIB_USEDEP}] )

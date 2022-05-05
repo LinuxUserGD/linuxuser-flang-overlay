@@ -6,4 +6,4 @@ EAPI=8
 DESCRIPTION="Virtual for Clang Compiler"
 SLOT="${PV}"
 KEYWORDS=""
-IUSE="debug default-compiler-rt default-libcxx default-lld doc llvm-libunwind +static-analyzer test xml kernel_FreeBSD +virtual"
+IUSE="+virtual"

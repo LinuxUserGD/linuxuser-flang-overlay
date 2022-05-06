@@ -1,7 +1,7 @@
 # linuxuser-llvm-overlay
 ### Unofficial experimental gentoo overlay for compiling llvm with flang (f18)
 
-#### See [ReleaseNotes](https://releases.llvm.org/13.0.0/tools/flang/docs/ReleaseNotes.html)
+#### See [README](https://github.com/llvm/llvm-project/tree/main/flang#flang) about flang compiler
 
 ##### To add this overlay:
 ```

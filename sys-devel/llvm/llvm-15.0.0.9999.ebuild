@@ -4,8 +4,7 @@
 EAPI=7
 
 PYTHON_COMPAT=( python3_{8..10} )
-inherit cmake llvm.org multilib-minimal pax-utils python-any-r1 \
-	toolchain-funcs
+inherit cmake llvm llvm.org multilib multilib-minimal prefix pax-utils python-single-r1 toolchain-funcs
 
 DESCRIPTION="Low Level Virtual Machine"
 HOMEPAGE="https://llvm.org/"
@@ -70,11 +69,17 @@ PDEPEND="
 	binutils-plugin? ( >=sys-devel/llvmgold-${SLOT} )
 "
 
-LLVM_COMPONENTS=( llvm mlir polly openmp llvm/include llvm/cmake cmake third-party flang clang libcxx libcxxabi compiler-rt lld libunwind runtimes )
+LLVM_COMPONENTS=( llvm llvm/lib/Testing/Support llvm/utils/{lit,llvm-lit,unittest} llvm/utils/{UpdateTestChecks,update_cc_test_checks.py} clang/bindings clang/cmake clang/docs clang/examples clang/include clang/lib clang/unittests clang/utils clang/www llvm/benchmarks llvm/bindings llvm/cmake llvm/docs llvm/examples llvm/include llvm/lib llvm/projects llvm/resources llvm/runtimes llvm/test llvm/tools llvm/unittests llvm/utils mlir polly openmp utils cmake third-party cross-project-tests bolt libclc flang clang clang-tools-extra libcxx libcxxabi compiler-rt lld lldb llvm-libgcc libunwind runtimes pstl )
 LLVM_MANPAGES=build
 LLVM_PATCHSET=9999-r3
 LLVM_USE_TARGETS=provide
 llvm.org_set_globals
+
+
+pkg_setup() {
+	LLVM_MAX_SLOT=${SLOT} llvm_pkg_setup
+	python-single-r1_pkg_setup
+}
 
 python_check_deps() {
 	use doc || return 0
@@ -143,6 +148,21 @@ check_distribution_components() {
 					docs-llvm-html)
 						use doc || continue
 						;;
+					# meta-targets
+					clang-libraries|distribution)
+						continue
+						;;
+					# tools
+					clang|clangd|clang-*)
+						;;
+					# static libraries
+					clang*|findAllSymbols)
+						continue
+						;;
+					# conditional to USE=doc
+					docs-clang-html|docs-clang-tools-html)
+						use doc || continue
+						;;
 				esac
 
 				all_targets+=( "${l}" )
@@ -184,7 +204,16 @@ src_prepare() {
 	# Verify that the live ebuild is up-to-date
 	check_live_ebuild
 
+	# create extra parent dir for relative CLANG_RESOURCE_DIR access
+	mkdir -p x/y || die
+	BUILD_DIR=${WORKDIR}/x/y/clang
+
 	llvm.org_src_prepare
+
+	# add Gentoo Portage Prefix for Darwin (see prefix-dirs.patch)
+	#eprefixify \
+	#	lib/Lex/InitHeaderSearch.cpp \
+	#	lib/Driver/ToolChains/Darwin.cpp || die
 }
 
 # Is LLVM being linked against libc++?
@@ -203,13 +232,25 @@ get_distribution_components() {
 	local sep=${1-;}
 
 	local out=(
-		# shared libs
+
+		# tools
+		llvm-config
 		LLVM
 		LTO
 		Remarks
 
-		# tools
-		llvm-config
+
+		# common stuff
+		clang-cmake-exports
+		clang-headers
+		clang-resource-headers
+		ppc-htm-resource-headers
+		libclang-headers
+
+		# libs
+		clang-cpp
+		libclang
+
 
 		# common stuff
 		cmake-exports
@@ -223,13 +264,8 @@ get_distribution_components() {
 		clangSupport
 		core-resource-headers
 		cuda-resource-headers
-		docs-openmp-html
-		docs-openmp-man
-		docs-polly-html
-		docs-polly-man
 		hexagon-resource-headers
 		hip-resource-headers
-		llvm-omp-device-info
 		mips-resource-headers
 		mlir-pdll-lsp-server
 		obj.MLIRCAPIControlFlow
@@ -243,129 +279,420 @@ get_distribution_components() {
 		webassembly-resource-headers
 		windows-resource-headers
 		x86-resource-headers
-
-
-		# libraries needed for clang-tblgen
-		LLVMDemangle
-		LLVMSupport
-		LLVMTableGen
-		LLVMAnalysis
-		LLVMTarget
-		LLVMBinaryFormat
-		LLVMCore
-		LLVMObject
-		LLVMProfileData
-		LLVMMC
-		LLVMMCParser
-		LLVMRemarks
-		LLVMBitReader
-		LLVMBitstreamReader
-		LLVMSymbolize
-		LLVMDebugInfoDWARF
-		LLVMDebugInfoMSF
-		LLVMDebugInfoPDB
-		LLVMDebugInfoCodeView
-		LLVMTextAPI
-		llvm-otool
-		llvm-windres
-		llvm-debuginfod-find
-		llvm-remark-size-diff
-		llvm-tli-checker
-
-		# fortran needed for flang
-		FortranCommon
-		FortranDecimal
-		FortranEvaluate
-		FortranLower
-		FortranParser
-		FortranRuntime
-		FortranSemantics
-
-		# mlir needed for flang
-		MLIRTensorToSPIRV
-		MLIRFuncToSPIRV
-		MLIRCAPILLVM
-		MLIRReduceLib
-		MLIRReconcileUnrealizedCasts
-		MLIRControlFlowToLLVM
-		MLIRSCFToControlFlow
-		MLIRVectorUtils
-		MLIRControlFlowToSPIRV
-		MLIRVectorTransforms
 		MLIRAffineAnalysis
+		MLIRAffine
+		MLIRAffineTransforms
+		MLIRAffineUtils
+		MLIRArithmetic
+		MLIRArithmeticTransforms
+		MLIRArithmeticUtils
+		MLIRArmNeon
+		MLIRArmSVE
+		MLIRArmSVETransforms
+		MLIRAsync
+		MLIRAsyncTransforms
+		MLIRAMX
+		MLIRAMXTransforms
 		MLIRBufferization
 		MLIRBufferizationTransforms
-		MLIRSCFUtils
-		MLIRTensorTilingInterfaceImpl
-		MLIRTensorUtils
-		MLIRArithmeticUtils
+		MLIRComplex
 		MLIRControlFlow
-		MLIRQuantUtils
-		MLIRQuantTransforms
-		MLIRSparseTensorPipelines
-		MLIRTensorInferTypeOpInterfaceImpl
-		MLIRBufferizationToMemRef
-		MLIRMemRefTestPasses
-		MLIRTensorTestPasses
-		MLIRArithmetic
-		MLIRArithmeticToLLVM
-		MLIRArithmeticToLLVM
-		MLIRArithmeticToSPIRV
-		MLIRArithmeticTransforms
-		MLIRAMXToLLVMIRTranslation
-		MLIRArmNeonToLLVMIRTranslation
-		MLIRArmSVEToLLVMIRTranslation
-		MLIRCAPIAsync
-		MLIRCAPIConversion
-		MLIRCAPIDebug
-		MLIRCAPIGPU
-		MLIRCAPISparseTensor
-		MLIRLspServerLib
-		MLIROpenACCToLLVMIRTranslation
-		MLIROpenMPToLLVMIRTranslation
-		MLIRTargetLLVMIRImport
-		MLIRToLLVMIRTranslationRegistration
-		MLIRX86VectorToLLVMIRTranslation
-		MLIRTargetCpp
-		MLIRLLVMCommonConversion
-		MLIRGPUTransforms
-		MLIRSparseTensorUtils
-		MLIRMemRefToSPIRV
-		MLIRArmNeon2dToIntr
-		MLIRMathToLLVM
-		MLIRMathToSPIRV
-		MLIROpenACCToSCF
-		MLIRVectorToGPU
+		MLIRDLTI
 		MLIREmitC
-		MLIRMemRefToLLVM
-		MLIRGPUOps
-		MLIRTilingInterface
-		MLIRFuncTransforms
 		MLIRFunc
-		MLIRFuncTestPasses
-		MLIRTestFuncToLLVM
-		MLIRFuncToLLVM
-		MLIRTranslateLib
-		MLIRCAPIExecutionEngine
-		MLIRCAPIFunc
-		MLIRCAPIInterfaces
-		MLIRCAPIPDL
-		MLIRCAPIQuant
-		MLIRPDLLAST
-		MLIRPDLLCodeGen
-		MLIRPDLLODS
-		MLIRLspServerSupportLib
+		MLIRFuncTransforms
+		MLIRGPUOps
+		MLIRGPUTransforms
+		MLIRAMDGPU
+		MLIRLinalgAnalysis
+		MLIRLinalg
 		MLIRLinalgTransformOps
+		MLIRLinalgTransforms
+		MLIRLinalgUtils
+		MLIRLLVMIRTransforms
+		MLIRLLVMIR
+		MLIRNVVMIR
+		MLIRROCDLIR
+		MLIRMath
+		MLIRMathTransforms
+		MLIRMemRef
+		MLIRMemRefTransforms
+		MLIRMemRefUtils
 		MLIRMLProgram
 		MLIRNVGPU
+		MLIROpenACC
+		MLIROpenMP
+		MLIRPDL
+		MLIRPDLInterp
+		MLIRQuant
+		MLIRExecutionEngineUtils
+		MLIRQuantTransforms
+		MLIRQuantUtils
+		MLIRSCF
+		MLIRSCFTransforms
+		MLIRSCFUtils
+		MLIRShape
+		MLIRShapeOpsTransforms
+		MLIRSparseTensor
+		MLIRSparseTensorTransforms
+		MLIRSparseTensorPipelines
+		MLIRSparseTensorUtils
+		MLIRSPIRV
+		MLIRSPIRVModuleCombiner
+		MLIRSPIRVConversion
+		MLIRSPIRVTransforms
+		MLIRSPIRVUtils
+		MLIRTensor
+		MLIRTensorInferTypeOpInterfaceImpl
+		MLIRTensorTilingInterfaceImpl
+		MLIRTensorTransforms
+		MLIRTensorUtils
+		MLIRTosa
+		MLIRTosaTransforms
 		MLIRTransformDialect
-		MLIRNVGPUToNVVM
-		MLIRTosaToArith
-		MLIRTosaToTensor
-		MLIRTestPDLL
-		MLIRTestTransformDialect
-		mlir-linalg-ods-yaml-gen
-		mlir-lsp-server
+		MLIRVector
+		MLIRVectorTransforms
+		MLIRVectorUtils
+		MLIRX86Vector
+		MLIRX86VectorTransforms
+		MLIRTosaTestPasses
+		MLIRAffineToStandard
+		MLIRFunc
+		MLIRLLVMIR
+		MLIRSCFToControlFlow
+		MLIRTransforms
+		MLIRLLVMToLLVMIRTranslation
+		MLIRSCFToControlFlow
+		MLIRAffineAnalysis
+		MLIRAffine
+		MLIRAffineTransforms
+		MLIRAffineUtils
+		MLIRArithmetic
+		MLIRArithmeticTransforms
+		MLIRArithmeticUtils
+		MLIRArmNeon
+		MLIRArmSVE
+		MLIRArmSVETransforms
+		MLIRAsync
+		MLIRAsyncTransforms
+		MLIRAMX
+		MLIRAMXTransforms
+		MLIRBufferization
+		MLIRBufferizationTransforms
+		MLIRComplex
+		MLIRControlFlow
+		MLIRDLTI
+		MLIREmitC
+		MLIRFunc
+		MLIRFuncTransforms
+		MLIRGPUOps
+		MLIRGPUTransforms
+		MLIRLinalgAnalysis
+		MLIRLinalg
+		MLIRLinalgTransformOps
+		MLIRLinalgTransforms
+		MLIRLinalgUtils
+		MLIRLLVMIRTransforms
+		MLIRLLVMIR
+		MLIRNVVMIR
+		MLIRROCDLIR
+		MLIRMath
+		MLIRMathTransforms
+		MLIRMemRef
+		MLIRMemRefTransforms
+		MLIRMemRefUtils
+		MLIRMLProgram
+		MLIRNVGPU
+		MLIROpenACC
+		MLIROpenMP
+		MLIRPDL
+		MLIRPDLInterp
+		MLIRQuant
+		MLIRQuantTransforms
+		MLIRQuantUtils
+		MLIRSCF
+		MLIRSCFTransforms
+		MLIRSCFUtils
+		MLIRShape
+		MLIRShapeOpsTransforms
+		MLIRSparseTensor
+		MLIRSparseTensorTransforms
+		MLIRSparseTensorPipelines
+		MLIRSparseTensorUtils
+		MLIRSPIRV
+		MLIRSPIRVModuleCombiner
+		MLIRSPIRVConversion
+		MLIRSPIRVTransforms
+		MLIRSPIRVUtils
+		MLIRTensor
+		MLIRTensorInferTypeOpInterfaceImpl
+		MLIRTensorTilingInterfaceImpl
+		MLIRTensorTransforms
+		MLIRTensorUtils
+		MLIRTosa
+		MLIRTosaTransforms
+		MLIRTransformDialect
+		MLIRVector
+		MLIRVectorTransforms
+		MLIRVectorUtils
+		MLIRX86Vector
+		MLIRX86VectorTransforms
+		MLIRTosaTestPasses
+		MLIRPass
+		MLIRAffineAnalysis
+		MLIRAffine
+		MLIRAffineTransforms
+		MLIRAffineUtils
+		MLIRArithmetic
+		MLIRArithmeticTransforms
+		MLIRArithmeticUtils
+		MLIRArmNeon
+		MLIRArmSVE
+		MLIRArmSVETransforms
+		MLIRAsync
+		MLIRAsyncTransforms
+		MLIRAMX
+		MLIRAMXTransforms
+		MLIRBufferization
+		MLIRBufferizationTransforms
+		MLIRComplex
+		MLIRControlFlow
+		MLIRDLTI
+		MLIREmitC
+		MLIRFunc
+		MLIRFuncTransforms
+		MLIRGPUOps
+		MLIRGPUTransforms
+		MLIRLinalgAnalysis
+		MLIRLinalg
+		MLIRLinalgTransformOps
+		MLIRLinalgTransforms
+		MLIRLinalgUtils
+		MLIRLLVMIRTransforms
+		MLIRLLVMIR
+		MLIRNVVMIR
+		MLIRROCDLIR
+		MLIRMath
+		MLIRMathTransforms
+		MLIRMemRef
+		MLIRMemRefTransforms
+		MLIRMemRefUtils
+		MLIRMLProgram
+		MLIRNVGPU
+		MLIROpenACC
+		MLIROpenMP
+		MLIRPDL
+		MLIRPDLInterp
+		MLIRQuant
+		MLIRQuantTransforms
+		MLIRQuantUtils
+		MLIRSCF
+		MLIRSCFTransforms
+		MLIRSCFUtils
+		MLIRShape
+		MLIRShapeOpsTransforms
+		MLIRSparseTensor
+		MLIRSparseTensorTransforms
+		MLIRSparseTensorPipelines
+		MLIRSparseTensorUtils
+		MLIRSPIRV
+		MLIRSPIRVModuleCombiner
+		MLIRSPIRVConversion
+		MLIRSPIRVTransforms
+		MLIRSPIRVUtils
+		MLIRTensor
+		MLIRTensorInferTypeOpInterfaceImpl
+		MLIRTensorTilingInterfaceImpl
+		MLIRTensorTransforms
+		MLIRTensorUtils
+		MLIRTosa
+		MLIRTosaTransforms
+		MLIRTransformDialect
+		MLIRVector
+		MLIRVectorTransforms
+		MLIRVectorUtils
+		MLIRX86Vector
+		MLIRX86VectorTransforms
+		MLIRTosaTestPasses
+		MLIROpenMPToLLVM
+		MLIRLLVMToLLVMIRTranslation
+		MLIRTargetLLVMIRExport
+		MLIRArithmetic
+		MLIROpenMPToLLVM
+		MLIRLLVMToLLVMIRTranslation
+		MLIRTargetLLVMIRExport
+		MLIRAffineAnalysis
+		MLIRAffine
+		MLIRAffineTransforms
+		MLIRAffineUtils
+		MLIRArithmetic
+		MLIRArithmeticTransforms
+		MLIRArithmeticUtils
+		MLIRArmNeon
+		MLIRArmSVE
+		MLIRArmSVETransforms
+		MLIRAsync
+		MLIRAsyncTransforms
+		MLIRAMX
+		MLIRAMXTransforms
+		MLIRBufferization
+		MLIRBufferizationTransforms
+		MLIRComplex
+		MLIRControlFlow
+		MLIRDLTI
+		MLIREmitC
+		MLIRFunc
+		MLIRFuncTransforms
+		MLIRGPUOps
+		MLIRGPUTransforms
+		MLIRLinalgAnalysis
+		MLIRLinalg
+		MLIRLinalgTransformOps
+		MLIRLinalgTransforms
+		MLIRLinalgUtils
+		MLIRLLVMIRTransforms
+		MLIRLLVMIR
+		MLIRNVVMIR
+		MLIRROCDLIR
+		MLIRMath
+		MLIRMathTransforms
+		MLIRMemRef
+		MLIRMemRefTransforms
+		MLIRMemRefUtils
+		MLIRMLProgram
+		MLIRNVGPU
+		MLIROpenACC
+		MLIROpenMP
+		MLIRPDL
+		MLIRPDLInterp
+		MLIRQuant
+		MLIRQuantTransforms
+		MLIRQuantUtils
+		MLIRSCF
+		MLIRSCFTransforms
+		MLIRSCFUtils
+		MLIRShape
+		MLIRShapeOpsTransforms
+		MLIRSparseTensor
+		MLIRSparseTensorTransforms
+		MLIRSparseTensorPipelines
+		MLIRSparseTensorUtils
+		MLIRSPIRV
+		MLIRSPIRVModuleCombiner
+		MLIRSPIRVConversion
+		MLIRSPIRVTransforms
+		MLIRSPIRVUtils
+		MLIRTensor
+		MLIRTensorInferTypeOpInterfaceImpl
+		MLIRTensorTilingInterfaceImpl
+		MLIRTensorTransforms
+		MLIRTensorUtils
+		MLIRTosa
+		MLIRTosaTransforms
+		MLIRTransformDialect
+		MLIRVector
+		MLIRVectorTransforms
+		MLIRVectorUtils
+		MLIRX86Vector
+		MLIRX86VectorTransforms
+		MLIRTosaTestPasses
+		MLIROpenMPToLLVMIRTranslation
+		MLIRLLVMToLLVMIRTranslation
+		MLIRTargetLLVMIRExport
+		MLIRAffineUtils
+		MLIRFunc
+		MLIRLLVMIR
+		MLIROpenACC
+		MLIROpenMP
+		MLIRIR
+		MLIRArithmeticToLLVM
+		MLIRFuncToLLVM
+		MLIRLLVMCommonConversion
+		MLIRMemRefToLLVM
+		MLIRAnalysis
+		MLIRCallInterfaces
+		MLIRControlFlowInterfaces
+		MLIRInferTypeOpInterface
+		MLIRPresburger
+		MLIRLoopLikeInterface
+		MLIRSideEffectInterfaces
+		MLIRVectorToLLVM
+		MLIRDialect
+		MLIRDataLayoutInterfaces
+		MLIRCastInterfaces
+		MLIRSupport
+		MLIRExecutionEngine
+		MLIRROCDLToLLVMIRTranslation
+		MLIRParser
+		MLIRTilingInterface
+		MLIRViewLikeInterface
+		MLIRVectorToSCF
+		MLIRMathToLibm
+		MLIRMathToLLVM
+		MLIRReconcileUnrealizedCasts
+		MLIRRewrite
+		MLIRVectorInterfaces
+		MLIRTranslateLib
+		MLIRCopyOpInterface
+		MLIRControlFlowToLLVM
+		MLIRControlFlowToLLVM
+		MLIRDialectUtils
+		MLIRPDLToPDLInterp
+		MLIRTransformUtils
+		LLVMExtensions
+		MLIR
+
+		# Polly
+		Polly
+		LLVMCore
+		LLVMScalarOpts
+		LLVMScalarOpts
+		LLVMTransformUtils
+		LLVMAnalysis
+		LLVMipo
+		LLVMMC
+		LLVMPasses
+		LLVMLinker
+		LLVMIRReader
+		LLVMAnalysis
+		LLVMBitReader
+		LLVMMCParser
+		LLVMObject
+		LLVMProfileData
+		LLVMTarget
+		LLVMVectorize
+		LLVMBinaryFormat
+		LLVMRemarks
+		LLVMAsmParser
+		LLVMBitstreamReader
+		LLVMAggressiveInstCombine
+		LLVMInstCombine
+		LLVMBitWriter
+		LLVMFrontendOpenMP
+		LLVMInstrumentation
+		LLVMDebugInfoCodeView
+		LLVMTextAPI
+		LLVMSymbolize
+		LLVMDebugInfoDWARF
+		LLVMCoroutines
+		LLVMObjCARCOpts
+		LLVMDebugInfoPDB
+		LLVMDebugInfoMSF
+
+		clangBasic
+		clangDriver
+		flang-cmake-exports
+		flang-libraries
+		mlir-cmake-exports
+		mlir-cpu-runner
+		mlir-headers
+		mlir-opt
+		mlir-reduce
+		mlir-tblgen
+		mlir-translate
+		mlir_async_runtime
+		mlir_c_runner_utils
+		mlir_runner_utils
 		obj.MLIRCAPIAsync
 		obj.MLIRCAPIConversion
 		obj.MLIRCAPIDebug
@@ -384,10 +711,66 @@ get_distribution_components() {
 		obj.MLIRCAPISparseTensor
 		obj.MLIRCAPITensor
 		obj.MLIRCAPITransforms
+
+		# libraries needed for clang-tblgen
+		LLVMDemangle
+		LLVMSupport
+		LLVMTableGen
+		llvm-otool
+		llvm-windres
+		llvm-debuginfod-find
+		llvm-remark-size-diff
+		llvm-tli-checker
+
+		# fortran needed for flang
+		FortranCommon
+		FortranDecimal
+		FortranEvaluate
+		FortranLower
+		FortranParser
+		FortranRuntime
+		FortranSemantics
+
+		# mlir needed for flang
+		mlir-linalg-ods-yaml-gen
+		mlir-lsp-server
 		bash-autocomplete
 		c-index-test
 
 		# clang needed for flang
+
+		# common stuff
+		bash-autocomplete
+		libclang-python-bindings
+
+		# tools
+		c-index-test
+		clang
+		clang-format
+		clang-offload-bundler
+		clang-offload-wrapper
+		clang-refactor
+		clang-repl
+		clang-rename
+		clang-scan-deps
+		diagtool
+		hmaptool
+
+		# extra tools
+		#clang-apply-replacements
+		#clang-change-namespace
+		#clang-doc
+		#clang-include-fixer
+		#clang-move
+		#clang-query
+		#clang-reorder-fields
+		#clang-tidy
+		#clang-tidy-headers
+		#clangd
+		#find-all-symbols
+		#modularize
+		#pp-trace
+
 		clang-check
 		clang-cmake-exports
 		clang-cpp
@@ -440,71 +823,19 @@ get_distribution_components() {
 		clangTransformer
 		clang-repl
 		clangAnalysisFlowSensitive
-		clang_rt.asan-dynamic-x86_64
-		clang_rt.asan-preinit-x86_64
-		clang_rt.asan-x86_64
-		clang_rt.asan_cxx-x86_64
-		clang_rt.asan_static-x86_64
-		clang_rt.builtins-x86_64
-		clang_rt.cfi-x86_64
-		clang_rt.cfi_diag-x86_64
-		clang_rt.crtbegin-x86_64
-		clang_rt.crtend-x86_64
-		clang_rt.dd-x86_64
-		clang_rt.dfsan-x86_64
-		clang_rt.dyndd-dynamic-x86_64
-		clang_rt.fuzzer-x86_64
-		clang_rt.fuzzer_interceptors-x86_64
-		clang_rt.fuzzer_no_main-x86_64
-		clang_rt.gwp_asan-x86_64
-		clang_rt.hwasan-dynamic-x86_64
-		clang_rt.hwasan-preinit-x86_64
-		clang_rt.hwasan-x86_64
-		clang_rt.hwasan_aliases-dynamic-x86_64
-		clang_rt.hwasan_aliases-x86_64
-		clang_rt.hwasan_aliases_cxx-x86_64
-		clang_rt.hwasan_cxx-x86_64
-		clang_rt.lsan-x86_64
-		clang_rt.memprof-dynamic-x86_64
-		clang_rt.memprof-preinit-x86_64
-		clang_rt.memprof-x86_64
-		clang_rt.memprof_cxx-x86_64
-		clang_rt.msan-x86_64
-		clang_rt.msan_cxx-x86_64
-		clang_rt.orc-x86_64
-		clang_rt.profile-x86_64
-		clang_rt.safestack-x86_64
-		clang_rt.scudo-dynamic-x86_64
-		clang_rt.scudo-x86_64
-		clang_rt.scudo_cxx-x86_64
-		clang_rt.scudo_cxx_minimal-x86_64
-		clang_rt.scudo_minimal-dynamic-x86_64
-		clang_rt.scudo_minimal-x86_64
-		clang_rt.scudo_standalone-dynamic-x86_64
-		clang_rt.scudo_standalone-x86_64
-		clang_rt.scudo_standalone_cxx-x86_64
-		clang_rt.stats-x86_64
-		clang_rt.stats_client-x86_64
-		clang_rt.tsan-dynamic-x86_64
-		clang_rt.tsan-x86_64
-		clang_rt.tsan_cxx-x86_64
-		clang_rt.ubsan_minimal-dynamic-x86_64
-		clang_rt.ubsan_minimal-x86_64
-		clang_rt.ubsan_standalone-dynamic-x86_64
-		clang_rt.ubsan_standalone-x86_64
-		clang_rt.ubsan_standalone_cxx-x86_64
-		clang_rt.xray-basic-x86_64
-		clang_rt.xray-fdr-x86_64
-		clang_rt.xray-profiling-x86_64
-		clang_rt.xray-x86_64
 		libclang-headers
 		libclang-python-bindings
 		libclang
 		diagtool
-		docs-clang-html
-		docs-clang-man
-		docs-flang-html
-		docs-flang-man
+
+		# manpages
+
+
+		clang-check
+		clang-extdef-mapping
+		scan-build
+		scan-build-py
+		scan-view
 
 		# f18 needed for flang
 		f18-parse-demo
@@ -524,346 +855,133 @@ get_distribution_components() {
 		scan-build
 		scan-view
 		tco
-		asan
 		bbc
 		builtins
-		cfi
-		compiler-rt-headers
+
+		# utilities
+		llvm-tblgen
+		FileCheck
+		llvm-PerfectShuffle
+		count
+		not
+		yaml-bench
+
+		# tools
+		bugpoint
+		dsymutil
+		llc
+		lli
+		lli-child-target
+		llvm-addr2line
+		llvm-ar
+		llvm-as
+		llvm-bcanalyzer
+		llvm-bitcode-strip
+		llvm-c-test
+		llvm-cat
+		llvm-cfi-verify
+		llvm-config
+		llvm-cov
+		llvm-cvtres
+		llvm-cxxdump
+		llvm-cxxfilt
+		llvm-cxxmap
+		llvm-diff
+		llvm-dis
+		llvm-dlltool
+		llvm-dwarfdump
+		llvm-dwp
+		#llvm-elfabi
+		llvm-exegesis
+		llvm-extract
+		llvm-gsymutil
+		llvm-ifs
+		llvm-install-name-tool
+		llvm-jitlink
+		llvm-jitlink-executor
+		llvm-lib
+		llvm-libtool-darwin
+		llvm-link
+		llvm-lipo
+		llvm-lto
+		llvm-lto2
+		llvm-mc
+		llvm-mca
+		llvm-ml
+		llvm-modextract
+		llvm-mt
+		llvm-nm
+		llvm-objcopy
+		llvm-objdump
+		llvm-opt-report
+		llvm-otool
+		llvm-pdbutil
+		llvm-profdata
+		llvm-profgen
+		llvm-ranlib
+		llvm-rc
+		llvm-readelf
+		llvm-readobj
+		llvm-reduce
+		llvm-rtdyld
+		llvm-sim
+		llvm-size
+		llvm-split
+		llvm-stress
+		llvm-strings
+		llvm-strip
+		llvm-symbolizer
+		llvm-tapi-diff
+		llvm-undname
+		llvm-windres
+		llvm-xray
+		obj2yaml
+		opt
+		sancov
+		sanstats
+		split-file
+		verify-uselistorder
+		yaml2obj
+
+		# python modules
+		opt-viewer
+
+		LLVMgold
+		# additional targets
+		clang-apply-replacements
+		clang-change-namespace
+		clang-doc
+		clang-include-fixer
+		clang-move
+		clang-pseudo
+		clang-query
+		clang-reorder-fields
+		clang-tidy-headers
+		clang-tidy
+		clangd
 		compiler-rt
-		crt
 		cxx
 		cxxabi
-		dd
-		dfsan
-		docs-lld-html
-		fuzzer
-		gwp_asan
-		hwasan
+		find-all-symbols
+		liblldb
 		lld-cmake-exports
 		lld
-		lsan
-		memprof
-		msan
-		orc
-		profile
+		lldb-argdumper
+		lldb-headers
+		lldb-instr
+		lldb-python-scripts
+		lldb-server
+		lldb
+		lldb-test
+		lldb-vscode
+		lldbIntelFeatures
+		modularize
+		openmp
+		pp-trace
 		runtimes
-		safestack
-		scudo
-		scudo_standalone
-		stats
-		tsan
-		ubsan-minimal
-		ubsan
 		unwind
-		xray
+
 	)
-
-	if multilib_is_native_abi; then
-		out+=(
-			# utilities
-			llvm-tblgen
-			FileCheck
-			llvm-PerfectShuffle
-			count
-			not
-			yaml-bench
-
-			# tools
-			bugpoint
-			dsymutil
-			llc
-			lli
-			lli-child-target
-			llvm-addr2line
-			llvm-ar
-			llvm-as
-			llvm-bcanalyzer
-			llvm-bitcode-strip
-			llvm-c-test
-			llvm-cat
-			llvm-cfi-verify
-			llvm-config
-			llvm-cov
-			llvm-cvtres
-			llvm-cxxdump
-			llvm-cxxfilt
-			llvm-cxxmap
-			llvm-diff
-			llvm-dis
-			llvm-dlltool
-			llvm-dwarfdump
-			llvm-dwp
-			#llvm-elfabi
-			llvm-exegesis
-			llvm-extract
-			llvm-gsymutil
-			llvm-ifs
-			llvm-install-name-tool
-			llvm-jitlink
-			llvm-jitlink-executor
-			llvm-lib
-			llvm-libtool-darwin
-			llvm-link
-			llvm-lipo
-			llvm-lto
-			llvm-lto2
-			llvm-mc
-			llvm-mca
-			llvm-ml
-			llvm-modextract
-			llvm-mt
-			llvm-nm
-			llvm-objcopy
-			llvm-objdump
-			llvm-opt-report
-			llvm-otool
-			llvm-pdbutil
-			llvm-profdata
-			llvm-profgen
-			llvm-ranlib
-			llvm-rc
-			llvm-readelf
-			llvm-readobj
-			llvm-reduce
-			llvm-rtdyld
-			llvm-sim
-			llvm-size
-			llvm-split
-			llvm-stress
-			llvm-strings
-			llvm-strip
-			llvm-symbolizer
-			llvm-tapi-diff
-			llvm-undname
-			llvm-windres
-			llvm-xray
-			obj2yaml
-			opt
-			sancov
-			sanstats
-			split-file
-			verify-uselistorder
-			yaml2obj
-
-			# python modules
-			opt-viewer
-		)
-
-		if llvm_are_manpages_built; then
-			out+=(
-				# manpages
-				docs-dsymutil-man
-				docs-llvm-dwarfdump-man
-				docs-llvm-man
-			)
-		fi
-		use doc && out+=(
-			docs-llvm-html
-		)
-
-		use binutils-plugin && out+=(
-			LLVMgold
-		)
-	fi
-
-	use mlir && out+=(
-		MLIR
-		MLIRAMX
-		MLIRAMXTransforms
-		MLIRAffine
-		MLIRAffineToStandard
-		MLIRAffineTransforms
-		MLIRAffineTransformsTestPasses
-		MLIRAffineUtils
-		MLIRAnalysis
-		MLIRArmNeon
-		MLIRArmSVE
-		MLIRArmSVETransforms
-		MLIRAsync
-		MLIRAsyncToLLVM
-		MLIRAsyncTransforms
-		MLIRCAPIIR
-		MLIRCAPILinalg
-		MLIRCAPIRegistration
-		MLIRCAPISCF
-		MLIRCAPIShape
-		MLIRCAPITensor
-		MLIRCAPITransforms
-		MLIRCallInterfaces
-		MLIRCastInterfaces
-		MLIRComplex
-		MLIRComplexToLLVM
-		MLIRComplexToStandard
-		MLIRControlFlowInterfaces
-		MLIRCopyOpInterface
-		MLIRDLTI
-		MLIRDLTITestPasses
-		MLIRDataLayoutInterfaces
-		MLIRDerivedAttributeOpInterface
-		MLIRDialect
-		MLIRDialectUtils
-		MLIRExecutionEngine
-		MLIRGPUTestPasses
-		MLIRGPUToGPURuntimeTransforms
-		MLIRGPUToNVVMTransforms
-		MLIRGPUToROCDLTransforms
-		MLIRGPUToSPIRV
-		MLIRGPUToVulkanTransforms
-		MLIRIR
-		MLIRInferTypeOpInterface
-		MLIRJitRunner
-		MLIRLLVMIR
-		MLIRLLVMIRTransforms
-		MLIRLLVMToLLVMIRTranslation
-		MLIRLinalg
-		MLIRLinalgAnalysis
-		MLIRLinalgTestPasses
-		MLIRLinalgToLLVM
-		MLIRLinalgToSPIRV
-		MLIRLinalgToStandard
-		MLIRLinalgTransforms
-		MLIRLinalgUtils
-		MLIRLoopLikeInterface
-		MLIRMath
-		MLIRMathTestPasses
-		MLIRMathToLibm
-		MLIRMathTransforms
-		MLIRMemRef
-		MLIRMemRefTransforms
-		MLIRMemRefUtils
-		MLIRMlirOptMain
-		MLIRNVVMIR
-		MLIRNVVMToLLVMIRTranslation
-		MLIROpenACC
-		MLIROpenACCToLLVM
-		MLIROpenMP
-		MLIROpenMPToLLVM
-		MLIROptLib
-		MLIRPDL
-		MLIRPDLInterp
-		MLIRPDLToPDLInterp
-		MLIRParser
-		MLIRPass
-		MLIRPresburger
-		MLIRQuant
-		MLIRROCDLIR
-		MLIRROCDLToLLVMIRTranslation
-		MLIRReduce
-		MLIRRewrite
-		MLIRSCF
-		MLIRSCFTestPasses
-		MLIRSCFToGPU
-		MLIRSCFToOpenMP
-		MLIRSCFToSPIRV
-		MLIRSCFTransforms
-		MLIRSPIRV
-		MLIRSPIRVBinaryUtils
-		MLIRSPIRVConversion
-		MLIRSPIRVDeserialization
-		MLIRSPIRVModuleCombiner
-		MLIRSPIRVSerialization
-		MLIRSPIRVTestPasses
-		MLIRSPIRVToLLVM
-		MLIRSPIRVTransforms
-		MLIRSPIRVTranslateRegistration
-		MLIRSPIRVUtils
-		MLIRShape
-		MLIRShapeOpsTransforms
-		MLIRShapeTestPasses
-		MLIRShapeToStandard
-		MLIRSideEffectInterfaces
-		MLIRSparseTensor
-		MLIRSparseTensorTransforms
-		MLIRSupport
-		MLIRSupportIndentedOstream
-		MLIRTableGen
-		MLIRTargetLLVMIRExport
-		MLIRTensor
-		MLIRTensorTransforms
-		MLIRTestAnalysis
-		MLIRTestDialect
-		MLIRTestIR
-		MLIRTestPass
-		MLIRTestReducer
-		MLIRTestRewrite
-		MLIRTestTransforms
-		MLIRTosa
-		MLIRTosaTestPasses
-		MLIRTosaToLinalg
-		MLIRTosaToSCF
-		MLIRTosaTransforms
-		MLIRTransformUtils
-		MLIRTransforms
-		MLIRVector
-		MLIRVectorInterfaces
-		MLIRVectorTestPasses
-		MLIRVectorToLLVM
-		MLIRVectorToROCDL
-		MLIRVectorToSCF
-		MLIRVectorToSPIRV
-		MLIRViewLikeInterface
-		MLIRX86Vector
-		MLIRX86VectorTransforms
-		clangBasic
-		clangDriver
-		flang-cmake-exports
-		flang-libraries
-		mlir-cmake-exports
-		mlir-cpu-runner
-		mlir-headers
-		mlir-opt
-		mlir-reduce
-		mlir-tblgen
-		mlir-translate
-		mlir_async_runtime
-		mlir_c_runner_utils
-		mlir_runner_utils
-	)
-
-	use polly && out+=(
-		Polly
-
-		LLVMBinaryFormat
-		LLVMCore
-		LLVMExtensions
-		LLVMScalarOpts
-		LLVMInstCombine
-		LLVMTransformUtils
-		LLVMAnalysis
-		LLVMipo
-		LLVMMC
-		LLVMPasses
-		LLVMLinker
-		LLVMIRReader
-		LLVMAnalysis
-		LLVMBitReader
-		LLVMMCParser
-		LLVMObject
-		LLVMProfileData
-		LLVMTarget
-		LLVMVectorize
-		LLVMRemarks
-		LLVMAsmParser
-		LLVMBitstreamReader
-		LLVMAggressiveInstCombine
-		LLVMAggressiveInstCombine
-		LLVMBitWriter
-		LLVMFrontendOpenMP
-		LLVMInstrumentation
-		LLVMBinaryFormat
-		LLVMBinaryFormat
-		LLVMDebugInfoCodeView
-		LLVMBinaryFormat
-		LLVMTextAPI
-		LLVMAggressiveInstCombine
-		LLVMCoroutines
-		LLVMObjCARCOpts
-		LLVMInstrumentation
-		LLVMDebugInfoDWARF
-	)
-
-
-
 	printf "%s${sep}" "${out[@]}"
 }
 
@@ -923,57 +1041,22 @@ multilib_src_configure() {
 		-DLIBCXX_CXX_ABI=libcxxabi
 		-DLIBCXX_HAS_MUSL_LIBC=$(usex elibc_musl)
 		-DLIBCXX_HAS_GCC_S_LIB=OFF
-	)
-
-	use mlir && mycmakeargs+=(
-		-DLLVM_ENABLE_RUNTIMES="libunwind;libcxxabi;libcxx"
-		-DLLVM_ENABLE_PROJECTS="mlir;polly;flang;clang;compiler-rt;lld;openmp"
-	)
-
-	if is_libcxx_linked; then
-		# Smart hack: alter version suffix -> SOVERSION when linking
-		# against libc++. This way we won't end up mixing LLVM libc++
-		# libraries with libstdc++ clang, and the other way around.
-		mycmakeargs+=(
-			-DLLVM_VERSION_SUFFIX="libcxx"
-			-DLLVM_ENABLE_LIBCXX=ON
-		)
-	fi
-
-#	Note: go bindings have no CMake rules at the moment
-#	but let's kill the check in case they are introduced
-#	if ! multilib_is_native_abi || ! use go; then
-		mycmakeargs+=(
-			-DGO_EXECUTABLE=GO_EXECUTABLE-NOTFOUND
-		)
-#	fi
-
-	use test && mycmakeargs+=(
+		-DLLVM_ENABLE_RUNTIMES="libcxx;libcxxabi;libunwind;compiler-rt;openmp"
+                -DLLVM_ENABLE_PROJECTS="clang;clang-tools-extra;cross-project-tests;flang;libclc;lld;lldb;mlir;polly;pstl"
+		-DLLVM_VERSION_SUFFIX="libcxx"
+		-DLLVM_ENABLE_LIBCXX=ON
+		-DGO_EXECUTABLE=GO_EXECUTABLE-NOTFOUND
 		-DLLVM_LIT_ARGS="$(get_lit_flags)"
+		-DCMAKE_INSTALL_MANDIR="${EPREFIX}/usr/lib/llvm/${SLOT}/share/man"
+		-DLLVM_INSTALL_SPHINX_HTML_DIR="${EPREFIX}/usr/share/doc/${PF}/html"
+		-DSPHINX_WARNINGS_AS_ERRORS=OFF
+		-DLLVM_BUILD_DOCS=${build_docs}
+		-DLLVM_ENABLE_OCAMLDOC=OFF
+		-DLLVM_ENABLE_SPHINX=${build_docs}
+		-DLLVM_ENABLE_DOXYGEN=OFF
+		-DLLVM_INSTALL_UTILS=ON
+		-DLLVM_BINUTILS_INCDIR="${EPREFIX}"/usr/include
 	)
-
-	if multilib_is_native_abi; then
-		local build_docs=OFF
-		if llvm_are_manpages_built; then
-			build_docs=ON
-			mycmakeargs+=(
-				-DCMAKE_INSTALL_MANDIR="${EPREFIX}/usr/lib/llvm/${SLOT}/share/man"
-				-DLLVM_INSTALL_SPHINX_HTML_DIR="${EPREFIX}/usr/share/doc/${PF}/html"
-				-DSPHINX_WARNINGS_AS_ERRORS=OFF
-			)
-		fi
-
-		mycmakeargs+=(
-			-DLLVM_BUILD_DOCS=${build_docs}
-			-DLLVM_ENABLE_OCAMLDOC=OFF
-			-DLLVM_ENABLE_SPHINX=${build_docs}
-			-DLLVM_ENABLE_DOXYGEN=OFF
-			-DLLVM_INSTALL_UTILS=ON
-		)
-		use binutils-plugin && mycmakeargs+=(
-			-DLLVM_BINUTILS_INCDIR="${EPREFIX}"/usr/include
-		)
-	fi
 
 	if tc-is-cross-compiler; then
 		local tblgen="${EPREFIX}/usr/lib/llvm/${SLOT}/bin/llvm-tblgen"

@@ -981,6 +981,13 @@ get_distribution_components() {
 		runtimes
 		unwind
 
+		MLIRComplexToLLVM
+		MLIRComplexToLibm
+		MLIRComplexToStandard
+		MLIRTransformDialectTransforms
+		Fortran_main
+		arm-common-resource-headers
+		tblgen-lsp-server
 	)
 	printf "%s${sep}" "${out[@]}"
 }

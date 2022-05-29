@@ -1055,7 +1055,6 @@ multilib_src_configure() {
 		-DGO_EXECUTABLE=GO_EXECUTABLE-NOTFOUND
 		-DLLVM_LIT_ARGS="$(get_lit_flags)"
 		-DCMAKE_INSTALL_MANDIR="${EPREFIX}/usr/lib/llvm/${SLOT}/share/man"
-		-DLLVM_INSTALL_SPHINX_HTML_DIR="${EPREFIX}/usr/share/doc/${PF}/html"
 		-DSPHINX_WARNINGS_AS_ERRORS=OFF
 		-DLLVM_BUILD_DOCS=${build_docs}
 		-DLLVM_ENABLE_OCAMLDOC=OFF

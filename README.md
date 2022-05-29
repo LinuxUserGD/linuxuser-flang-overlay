@@ -10,7 +10,7 @@
 - [libunwind](https://github.com/llvm/llvm-project/tree/main/libunwind#readme)
 ##### To add this overlay:
 ```
-# eselect repository add LinuxUserGD git https://github.com/LinuxUserGD/linuxuser-flang-overlay.git
+# eselect repository add LinuxUserGD git https://github.com/LinuxUserGD/llvm-overlay.git
 # emerge --sync LinuxUserGD
 ```
 ##### [https://wiki.gentoo.org/wiki/Eselect/Repository#Add_repositories](https://wiki.gentoo.org/wiki/Eselect/Repository#Add_repositories)

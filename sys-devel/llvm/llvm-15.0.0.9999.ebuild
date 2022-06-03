@@ -613,6 +613,7 @@ get_distribution_components() {
 		MLIRCallInterfaces
 		MLIRControlFlowInterfaces
 		MLIRInferTypeOpInterface
+		MLIRInferIntRangeInterface
 		MLIRPresburger
 		MLIRLoopLikeInterface
 		MLIRSideEffectInterfaces

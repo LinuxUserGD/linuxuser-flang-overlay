@@ -232,7 +232,6 @@ get_distribution_components() {
 	local sep=${1-;}
 
 	local out=(
-
 		# tools
 		llvm-config
 		LLVM
@@ -977,7 +976,6 @@ get_distribution_components() {
 		lldb-vscode
 		lldbIntelFeatures
 		modularize
-		openmp
 		pp-trace
 		runtimes
 		unwind
@@ -1049,12 +1047,13 @@ multilib_src_configure() {
 		-DLIBCXX_CXX_ABI=libcxxabi
 		-DLIBCXX_HAS_MUSL_LIBC=$(usex elibc_musl)
 		-DLIBCXX_HAS_GCC_S_LIB=OFF
-		-DLLVM_ENABLE_RUNTIMES="libcxx;libcxxabi;libunwind;compiler-rt;openmp"
-                -DLLVM_ENABLE_PROJECTS="clang;clang-tools-extra;cross-project-tests;flang;libclc;lld;lldb;mlir;polly;pstl"
+		-DLLVM_ENABLE_RUNTIMES="libcxx;libcxxabi;libunwind;compiler-rt"
+                -DLLVM_ENABLE_PROJECTS="clang;clang-tools-extra;cross-project-tests;flang;openmp;libclc;lld;lldb;mlir;polly;pstl"
 		-DLLVM_VERSION_SUFFIX="libcxx"
 		-DLLVM_ENABLE_LIBCXX=ON
 		-DGO_EXECUTABLE=GO_EXECUTABLE-NOTFOUND
-		-DLLVM_LIT_ARGS="$(get_lit_flags)"
+		# fix CMake Error: Unknown argument -j
+		-DLLVM_LIT_ARGS="-vv"
 		-DCMAKE_INSTALL_MANDIR="${EPREFIX}/usr/lib/llvm/${SLOT}/share/man"
 		-DLLVM_BUILD_DOCS=${build_docs}
 		-DLLVM_ENABLE_OCAMLDOC=OFF

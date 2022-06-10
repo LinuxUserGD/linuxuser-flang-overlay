@@ -278,6 +278,12 @@ get_distribution_components() {
 		webassembly-resource-headers
 		windows-resource-headers
 		x86-resource-headers
+		clang-offload-packager
+		hlsl-resource-headers
+		llvm-omp-device-info
+		mlir-libraries
+		MLIRBufferizationTransformOps
+		MLIRSCFTransformOps
 		MLIRAffineAnalysis
 		MLIRAffine
 		MLIRAffineTransforms

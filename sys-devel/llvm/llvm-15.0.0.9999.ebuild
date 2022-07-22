@@ -282,333 +282,53 @@ get_distribution_components() {
 		hlsl-resource-headers
 		llvm-omp-device-info
 		mlir-libraries
-		MLIRBufferizationTransformOps
 		MLIRSCFTransformOps
-		MLIRAffineAnalysis
-		MLIRAffine
-		MLIRAffineTransforms
-		MLIRAffineUtils
-		MLIRArithmetic
-		MLIRArithmeticTransforms
-		MLIRArithmeticUtils
-		MLIRArmNeon
-		MLIRArmSVE
-		MLIRArmSVETransforms
-		MLIRAsync
-		MLIRAsyncTransforms
-		MLIRAMX
-		MLIRAMXTransforms
-		MLIRBufferization
-		MLIRBufferizationTransforms
-		MLIRComplex
-		MLIRControlFlow
-		MLIRDLTI
-		MLIREmitC
-		MLIRFunc
 		MLIRFuncTransforms
 		MLIRGPUOps
 		MLIRGPUTransforms
-		MLIRAMDGPU
 		MLIRLinalgAnalysis
-		MLIRLinalg
 		MLIRLinalgTransformOps
 		MLIRLinalgTransforms
 		MLIRLinalgUtils
 		MLIRLLVMIRTransforms
-		MLIRLLVMIR
-		MLIRNVVMIR
-		MLIRROCDLIR
-		MLIRMath
 		MLIRMathTransforms
-		MLIRMemRef
 		MLIRMemRefTransforms
 		MLIRMemRefUtils
-		MLIRMLProgram
-		MLIRNVGPU
-		MLIROpenACC
-		MLIROpenMP
-		MLIRPDL
-		MLIRPDLInterp
-		MLIRQuant
 		MLIRExecutionEngineUtils
 		MLIRQuantTransforms
 		MLIRQuantUtils
-		MLIRSCF
-		MLIRSCFTransforms
-		MLIRSCFUtils
-		MLIRShape
-		MLIRShapeOpsTransforms
-		MLIRSparseTensor
-		MLIRSparseTensorTransforms
-		MLIRSparseTensorPipelines
-		MLIRSparseTensorUtils
-		MLIRSPIRV
-		MLIRSPIRVModuleCombiner
-		MLIRSPIRVConversion
-		MLIRSPIRVTransforms
-		MLIRSPIRVUtils
-		MLIRTensor
-		MLIRTensorInferTypeOpInterfaceImpl
-		MLIRTensorTilingInterfaceImpl
 		MLIRTensorTransforms
 		MLIRTensorUtils
-		MLIRTosa
 		MLIRTosaTransforms
 		MLIRTransformDialect
-		MLIRVector
 		MLIRVectorTransforms
 		MLIRVectorUtils
-		MLIRX86Vector
-		MLIRX86VectorTransforms
-		MLIRTosaTestPasses
-		MLIRAffineToStandard
-		MLIRFunc
-		MLIRLLVMIR
-		MLIRSCFToControlFlow
-		MLIRTransforms
-		MLIRLLVMToLLVMIRTranslation
-		MLIRSCFToControlFlow
-		MLIRAffineAnalysis
-		MLIRAffine
-		MLIRAffineTransforms
-		MLIRAffineUtils
-		MLIRArithmetic
-		MLIRArithmeticTransforms
-		MLIRArithmeticUtils
-		MLIRArmNeon
-		MLIRArmSVE
-		MLIRArmSVETransforms
-		MLIRAsync
-		MLIRAsyncTransforms
-		MLIRAMX
-		MLIRAMXTransforms
-		MLIRBufferization
-		MLIRBufferizationTransforms
-		MLIRComplex
-		MLIRControlFlow
-		MLIRDLTI
-		MLIREmitC
-		MLIRFunc
-		MLIRFuncTransforms
-		MLIRGPUOps
-		MLIRGPUTransforms
-		MLIRLinalgAnalysis
-		MLIRLinalg
-		MLIRLinalgTransformOps
-		MLIRLinalgTransforms
-		MLIRLinalgUtils
-		MLIRLLVMIRTransforms
-		MLIRLLVMIR
-		MLIRNVVMIR
-		MLIRROCDLIR
-		MLIRMath
-		MLIRMathTransforms
-		MLIRMemRef
-		MLIRMemRefTransforms
-		MLIRMemRefUtils
-		MLIRMLProgram
-		MLIRNVGPU
-		MLIROpenACC
-		MLIROpenMP
-		MLIRPDL
-		MLIRPDLInterp
-		MLIRQuant
-		MLIRQuantTransforms
-		MLIRQuantUtils
-		MLIRSCF
-		MLIRSCFTransforms
-		MLIRSCFUtils
-		MLIRShape
-		MLIRShapeOpsTransforms
-		MLIRSparseTensor
-		MLIRSparseTensorTransforms
-		MLIRSparseTensorPipelines
-		MLIRSparseTensorUtils
-		MLIRSPIRV
-		MLIRSPIRVModuleCombiner
-		MLIRSPIRVConversion
-		MLIRSPIRVTransforms
-		MLIRSPIRVUtils
-		MLIRTensor
-		MLIRTensorInferTypeOpInterfaceImpl
-		MLIRTensorTilingInterfaceImpl
-		MLIRTensorTransforms
-		MLIRTensorUtils
-		MLIRTosa
-		MLIRTosaTransforms
-		MLIRTransformDialect
-		MLIRVector
-		MLIRVectorTransforms
-		MLIRVectorUtils
-		MLIRX86Vector
-		MLIRX86VectorTransforms
-		MLIRTosaTestPasses
-		MLIRPass
-		MLIRAffineAnalysis
-		MLIRAffine
-		MLIRAffineTransforms
-		MLIRAffineUtils
-		MLIRArithmetic
-		MLIRArithmeticTransforms
-		MLIRArithmeticUtils
-		MLIRArmNeon
-		MLIRArmSVE
-		MLIRArmSVETransforms
-		MLIRAsync
-		MLIRAsyncTransforms
-		MLIRAMX
-		MLIRAMXTransforms
-		MLIRBufferization
-		MLIRBufferizationTransforms
-		MLIRComplex
-		MLIRControlFlow
-		MLIRDLTI
-		MLIREmitC
-		MLIRFunc
-		MLIRFuncTransforms
-		MLIRGPUOps
-		MLIRGPUTransforms
-		MLIRLinalgAnalysis
-		MLIRLinalg
-		MLIRLinalgTransformOps
-		MLIRLinalgTransforms
-		MLIRLinalgUtils
-		MLIRLLVMIRTransforms
-		MLIRLLVMIR
-		MLIRNVVMIR
-		MLIRROCDLIR
-		MLIRMath
-		MLIRMathTransforms
-		MLIRMemRef
-		MLIRMemRefTransforms
-		MLIRMemRefUtils
-		MLIRMLProgram
-		MLIRNVGPU
-		MLIROpenACC
-		MLIROpenMP
-		MLIRPDL
-		MLIRPDLInterp
-		MLIRQuant
-		MLIRQuantTransforms
-		MLIRQuantUtils
-		MLIRSCF
-		MLIRSCFTransforms
-		MLIRSCFUtils
-		MLIRShape
-		MLIRShapeOpsTransforms
-		MLIRSparseTensor
-		MLIRSparseTensorTransforms
-		MLIRSparseTensorPipelines
-		MLIRSparseTensorUtils
-		MLIRSPIRV
-		MLIRSPIRVModuleCombiner
-		MLIRSPIRVConversion
-		MLIRSPIRVTransforms
-		MLIRSPIRVUtils
-		MLIRTensor
-		MLIRTensorInferTypeOpInterfaceImpl
-		MLIRTensorTilingInterfaceImpl
-		MLIRTensorTransforms
-		MLIRTensorUtils
-		MLIRTosa
-		MLIRTosaTransforms
-		MLIRTransformDialect
-		MLIRVector
-		MLIRVectorTransforms
-		MLIRVectorUtils
-		MLIRX86Vector
 		MLIRX86VectorTransforms
 		MLIRTosaTestPasses
 		MLIROpenMPToLLVM
 		MLIRLLVMToLLVMIRTranslation
 		MLIRTargetLLVMIRExport
-		MLIRArithmetic
-		MLIROpenMPToLLVM
-		MLIRLLVMToLLVMIRTranslation
-		MLIRTargetLLVMIRExport
 		MLIRAffineAnalysis
-		MLIRAffine
 		MLIRAffineTransforms
 		MLIRAffineUtils
-		MLIRArithmetic
 		MLIRArithmeticTransforms
 		MLIRArithmeticUtils
-		MLIRArmNeon
-		MLIRArmSVE
 		MLIRArmSVETransforms
-		MLIRAsync
 		MLIRAsyncTransforms
-		MLIRAMX
 		MLIRAMXTransforms
-		MLIRBufferization
-		MLIRBufferizationTransforms
-		MLIRComplex
-		MLIRControlFlow
-		MLIRDLTI
-		MLIREmitC
-		MLIRFunc
-		MLIRFuncTransforms
-		MLIRGPUOps
-		MLIRGPUTransforms
-		MLIRLinalgAnalysis
-		MLIRLinalg
-		MLIRLinalgTransformOps
-		MLIRLinalgTransforms
-		MLIRLinalgUtils
-		MLIRLLVMIRTransforms
-		MLIRLLVMIR
-		MLIRNVVMIR
-		MLIRROCDLIR
-		MLIRMath
-		MLIRMathTransforms
-		MLIRMemRef
-		MLIRMemRefTransforms
-		MLIRMemRefUtils
-		MLIRMLProgram
-		MLIRNVGPU
-		MLIROpenACC
-		MLIROpenMP
-		MLIRPDL
-		MLIRPDLInterp
-		MLIRQuant
 		MLIRQuantTransforms
 		MLIRQuantUtils
-		MLIRSCF
-		MLIRSCFTransforms
 		MLIRSCFUtils
-		MLIRShape
 		MLIRShapeOpsTransforms
-		MLIRSparseTensor
 		MLIRSparseTensorTransforms
 		MLIRSparseTensorPipelines
 		MLIRSparseTensorUtils
-		MLIRSPIRV
 		MLIRSPIRVModuleCombiner
 		MLIRSPIRVConversion
 		MLIRSPIRVTransforms
 		MLIRSPIRVUtils
-		MLIRTensor
 		MLIRTensorInferTypeOpInterfaceImpl
 		MLIRTensorTilingInterfaceImpl
-		MLIRTensorTransforms
-		MLIRTensorUtils
-		MLIRTosa
-		MLIRTosaTransforms
-		MLIRTransformDialect
-		MLIRVector
-		MLIRVectorTransforms
-		MLIRVectorUtils
-		MLIRX86Vector
-		MLIRX86VectorTransforms
-		MLIRTosaTestPasses
-		MLIROpenMPToLLVMIRTranslation
-		MLIRLLVMToLLVMIRTranslation
-		MLIRTargetLLVMIRExport
-		MLIRAffineUtils
-		MLIRFunc
-		MLIRLLVMIR
-		MLIROpenACC
-		MLIROpenMP
 		MLIRIR
 		MLIRArithmeticToLLVM
 		MLIRFuncToLLVM
@@ -641,7 +361,6 @@ get_distribution_components() {
 		MLIRTranslateLib
 		MLIRCopyOpInterface
 		MLIRControlFlowToLLVM
-		MLIRControlFlowToLLVM
 		MLIRDialectUtils
 		MLIRPDLToPDLInterp
 		MLIRTransformUtils
@@ -654,7 +373,6 @@ get_distribution_components() {
 		LLVMScalarOpts
 		LLVMScalarOpts
 		LLVMTransformUtils
-		LLVMAnalysis
 		LLVMipo
 		LLVMMC
 		LLVMPasses
@@ -711,7 +429,6 @@ get_distribution_components() {
 		obj.MLIRCAPILinalg
 		obj.MLIRCAPIPDL
 		obj.MLIRCAPIQuant
-		obj.MLIRCAPIRegistration
 		obj.MLIRCAPISCF
 		obj.MLIRCAPIShape
 		obj.MLIRCAPISparseTensor
@@ -761,21 +478,6 @@ get_distribution_components() {
 		clang-scan-deps
 		diagtool
 		hmaptool
-
-		# extra tools
-		#clang-apply-replacements
-		#clang-change-namespace
-		#clang-doc
-		#clang-include-fixer
-		#clang-move
-		#clang-query
-		#clang-reorder-fields
-		#clang-tidy
-		#clang-tidy-headers
-		#clangd
-		#find-all-symbols
-		#modularize
-		#pp-trace
 
 		clang-check
 		clang-cmake-exports
